@@ -39,6 +39,7 @@ import net.rptools.parser.VariableResolver;
 import net.rptools.parser.function.AbstractFunction;
 
 public class MapFunctions extends AbstractFunction {
+  public static final String ON_CHANGE_MAP_CALLBACK = "onChangeMap";
   private static final MapFunctions instance = new MapFunctions();
 
   private MapFunctions() {
@@ -63,7 +64,9 @@ public class MapFunctions extends AbstractFunction {
         "copyMap",
         "createMap",
         "getMapName",
-        "setMapSelectButton");
+        "setMapSelectButton",
+        "getMapVision",
+        "setMapVision");
   }
 
   public static MapFunctions getInstance() {
@@ -397,6 +400,26 @@ public class MapFunctions extends AbstractFunction {
       return (MapTool.getFrame().getToolbarPanel().getMapselect().isVisible()
           ? BigDecimal.ONE
           : BigDecimal.ZERO);
+    } else if ("setMapVision".equalsIgnoreCase(functionName)) {
+      FunctionUtil.blockUntrustedMacro(functionName);
+      FunctionUtil.checkNumberParam(functionName, parameters, 1, 1);
+      Zone currentZR = MapTool.getFrame().getCurrentZoneRenderer().getZone();
+      if (currentZR == null) {
+        throw new ParserException(I18N.getText("macro.function.map.none", functionName));
+      }
+      switch (parameters.get(0).toString().toLowerCase()) {
+        case "off" -> MapTool.serverCommand().setVisionType(currentZR.getId(), Zone.VisionType.OFF);
+        case "day" -> MapTool.serverCommand().setVisionType(currentZR.getId(), Zone.VisionType.DAY);
+        case "night" -> MapTool.serverCommand()
+            .setVisionType(currentZR.getId(), Zone.VisionType.NIGHT);
+        default -> throw new ParserException(
+            I18N.getText("macro.function.general.argumentTypeInvalid", functionName));
+      }
+      return "";
+    } else if ("getMapVision".equalsIgnoreCase(functionName)) {
+      FunctionUtil.checkNumberParam(functionName, parameters, 0, 0);
+      ZoneRenderer currentZR = MapTool.getFrame().getCurrentZoneRenderer();
+      return currentZR.getZone().getVisionType().toString();
     }
 
     throw new ParserException(I18N.getText("macro.function.general.unknownFunction", functionName));
