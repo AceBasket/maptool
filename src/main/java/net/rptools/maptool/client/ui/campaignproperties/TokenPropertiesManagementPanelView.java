@@ -19,9 +19,6 @@ import javax.swing.*;
 public class TokenPropertiesManagementPanelView {
 
   private JPanel mainPanel;
-  private JCheckBox statSheetCheckBox;
-  private JCheckBox GMCheckBox;
-  private JCheckBox ownerCheckBox;
 
   public JComponent getRootComponent() {
     return mainPanel;

@@ -21,10 +21,13 @@ import java.io.StringReader;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import net.rptools.CaseInsensitiveHashMap;
 import net.rptools.maptool.client.MapTool;
 import net.rptools.maptool.client.swing.AbeillePanel;
 import net.rptools.maptool.client.swing.TextFieldEditorButtonTableCellEditor;
+import net.rptools.maptool.client.ui.JTableColumnHeaderToolTips;
+import net.rptools.maptool.client.ui.JTableHeaderMouseListener;
 import net.rptools.maptool.client.ui.campaignproperties.TokenPropertiesTableModel.LargeEditableText;
 import net.rptools.maptool.client.ui.sheet.stats.StatSheetComboBoxRenderer;
 import net.rptools.maptool.language.I18N;
@@ -313,6 +316,42 @@ public class TokenPropertiesManagementPanel extends AbeillePanel<CampaignPropert
     propertyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     propertyTable.getColumnModel().getColumn(0).setPreferredWidth(80);
     propertyTable.getColumnModel().getColumn(2).setPreferredWidth(100);
+
+    // Add tooltips to the column headers + click on header to select all
+    String[] columnHeaderToolTips = {
+      propertyTable.getColumnName(0),
+      propertyTable.getColumnName(1),
+      propertyTable.getColumnName(2),
+      "Click to toggle all checkboxes",
+      "Click to toggle all checkboxes",
+      "Click to toggle all checkboxes",
+      propertyTable.getColumnName(6)
+    };
+    setJTableHeaderColumnToolTips(propertyTable, columnHeaderToolTips);
+    JTableHeader header = propertyTable.getTableHeader();
+    header.addMouseListener(
+        new JTableHeaderMouseListener(
+            propertyTable,
+            List.of(3, 4, 5),
+            (model, state, row, column) -> {
+              System.out.println("Setting " + row + "," + column + " to " + state);
+              TokenPropertiesTableModel tokenPropertiesModel = (TokenPropertiesTableModel) model;
+              if (tokenPropertiesModel.isCellEditable(row, column)) {
+                System.out.println("Cell: " + row + "," + column + " is editable");
+                tokenPropertiesModel.setValueAt(state, row, column);
+                System.out.println("Cell: " + row + "," + column + " is now " + state);
+              }
+            }));
+  }
+
+  private void setJTableHeaderColumnToolTips(JTable table, String[] toolTips) {
+    JTableHeader header = table.getTableHeader();
+
+    JTableColumnHeaderToolTips tips = new JTableColumnHeaderToolTips();
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      tips.setHeaderColumnToolTips(table.getColumnModel().getColumn(i), toolTips[i]);
+    }
+    header.addMouseMotionListener(tips);
   }
 
   public void initTokenTypeName() {
