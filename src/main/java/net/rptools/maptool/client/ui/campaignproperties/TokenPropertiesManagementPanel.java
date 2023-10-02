@@ -322,9 +322,9 @@ public class TokenPropertiesManagementPanel extends AbeillePanel<CampaignPropert
       propertyTable.getColumnName(0),
       propertyTable.getColumnName(1),
       propertyTable.getColumnName(2),
-      "Click to toggle all checkboxes",
-      "Click to toggle all checkboxes",
-      "Click to toggle all checkboxes",
+      I18N.getText("campaignPropertiesTable.column.checkall"),
+      I18N.getText("campaignPropertiesTable.column.checkall"),
+      I18N.getText("campaignPropertiesTable.column.checkall"),
       propertyTable.getColumnName(6)
     };
     setJTableHeaderColumnToolTips(propertyTable, columnHeaderToolTips);
